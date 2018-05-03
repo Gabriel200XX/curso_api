@@ -10,7 +10,8 @@ class App {
     }
     middleware() {
         this.express.use('/graphql', graphqlHttp({
-            schema: schema_1.default
+            schema: schema_1.default,
+            graphiql: process.env.NODE_ENV.trim() === 'development'
         }));
     }
 }
