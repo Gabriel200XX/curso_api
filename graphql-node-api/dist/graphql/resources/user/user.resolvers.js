@@ -27,7 +27,7 @@ exports.userResolvers = {
         user: (parent, { id }, context, info) => {
             id = Number.parseInt(id);
             return context.db.User
-                .findById(id, { attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['comments'] }) })
+                .findById(id, { attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['posts'] }) })
                 .then((user) => {
                 utils_1.throwError(!user, `User with id ${id} not found!`);
                 return user;
@@ -35,7 +35,7 @@ exports.userResolvers = {
         },
         currentUser: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, args, context, info) => {
             return context.db.User
-                .findById(context.authUser.id, { attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['comments'] }) })
+                .findById(context.authUser.id, { attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['posts'] }) })
                 .then((user) => {
                 utils_1.throwError(!user, `User with id ${context.authUser.id} not found!`);
                 return user;
