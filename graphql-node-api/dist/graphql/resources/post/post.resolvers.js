@@ -10,27 +10,29 @@ exports.postResolvers = {
                 .load(post.get('author'))
                 .catch(utils_1.handleError);
         },
-        comments: (post, { first = 10, offset = 0 }, { db }, info) => {
-            return db.Comment
+        comments: (post, { first = 10, offset = 0 }, context, info) => {
+            return context.db.Comment
                 .findAll({
                 where: { post: post.get('id') },
                 limit: first,
-                offset: offset
+                offset: offset,
+                attributes: context.requestedFields.getFields(info)
             }).catch(utils_1.handleError);
         },
     },
     Query: {
-        posts: (parent, { first = 10, offset = 0 }, { db }, info) => {
-            return db.Post
+        posts: (parent, { first = 10, offset = 0 }, context, info) => {
+            return context.db.Post
                 .findAll({
                 limit: first,
-                offset: offset
+                offset: offset,
+                attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['comments'] })
             }).catch(utils_1.handleError);
         },
-        post: (parent, { id }, { db }, info) => {
+        post: (parent, { id }, context, info) => {
             id = Number.parseInt(id);
-            return db.Post
-                .findById(id)
+            return context.db.Post
+                .findById(id, { attributes: context.requestedFields.getFields(info, { keep: ['id'], exclude: ['comments'] }) })
                 .then((post) => {
                 utils_1.throwError(!post, `Post with id ${id} not found!`);
                 return post;

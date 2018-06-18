@@ -17,13 +17,14 @@ exports.commentResolvers = {
         },
     },
     Query: {
-        commentsByPost: (parent, { postId, first = 10, offset = 0 }, { db }, info) => {
+        commentsByPost: (parent, { postId, first = 10, offset = 0 }, { db, requestedFields }, info) => {
             postId = Number.parseInt(postId);
             return db.Comment
                 .findAll({
                 where: { post: postId },
                 limit: first,
-                offset: offset
+                offset: offset,
+                attributes: requestedFields.getFields(info)
             }).catch(utils_1.handleError);
         }
     },
