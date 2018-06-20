@@ -25,20 +25,19 @@ export const commentResolvers = {
     },
 
     Query: {
-        commentsByPost: (parent, { postId, first = 10, offset = 0 }, { db, requestedFields }: { db: DbConnection, requestedFields: RequestedFields }, info: GraphQLResolveInfo) => {
-            postId = Number.parseInt(postId);
+        commentsByPost: compose()((parent, { postId, first = 10, offset = 0 }, { db, requestedFields }: { db: DbConnection, requestedFields: RequestedFields }, info: GraphQLResolveInfo) => {
             return db.Comment
                 .findAll({
                     where: { post: postId },
                     limit: first,
                     offset: offset,
-                    attributes: requestedFields.getFields(info)
+                    attributes: requestedFields.getFields(info, { keep: undefined })
                 }).catch(handleError);
-        }
+        })
     },
 
     Mutation: {
-        createComment: compose(...authResolvers)((parent, { input, authUser }, { db }: { db: DbConnection, authUser: AuthUser }, info: GraphQLResolveInfo) => {
+        createComment: compose(...authResolvers)((parent, { input }, { db, authUser }: { db: DbConnection, authUser: AuthUser }, info: GraphQLResolveInfo) => {
             input.user = authUser.id;
             return db.sequelize.transaction((t: Transaction) => {
                 return db.Comment
@@ -46,8 +45,8 @@ export const commentResolvers = {
             }).catch(handleError);
         }),
 
-        updateComment: compose(...authResolvers)((parent, { id, input, authUser }, { db }: { db: DbConnection, authUser: AuthUser }, info: GraphQLResolveInfo) => {
-            id = Number.parseInt(id);
+        updateComment: compose(...authResolvers)((parent, { id, input }, { db, authUser }: { db: DbConnection, authUser: AuthUser }, info: GraphQLResolveInfo) => {
+            //id = Number.parseInt(id);
             return db.sequelize.transaction((t: Transaction) => {
                 return db.Comment
                     .findById(id)
@@ -61,7 +60,7 @@ export const commentResolvers = {
         }),
 
         deleteComment: compose(...authResolvers)((parent, { id }, { db, authUser }: { db: DbConnection, authUser: AuthUser }, info: GraphQLResolveInfo) => {
-            id = Number.parseInt(id);
+            //id = Number.parseInt(id);
             return db.sequelize.transaction((t: Transaction) => {
                 return db.Comment
                     .findById(id)

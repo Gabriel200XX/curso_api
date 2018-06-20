@@ -18,7 +18,6 @@ exports.commentResolvers = {
     },
     Query: {
         commentsByPost: (parent, { postId, first = 10, offset = 0 }, { db, requestedFields }, info) => {
-            postId = Number.parseInt(postId);
             return db.Comment
                 .findAll({
                 where: { post: postId },
@@ -29,15 +28,15 @@ exports.commentResolvers = {
         }
     },
     Mutation: {
-        createComment: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, { input, authUser }, { db }, info) => {
+        createComment: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, { input }, { db, authUser }, info) => {
             input.user = authUser.id;
             return db.sequelize.transaction((t) => {
                 return db.Comment
                     .create(input, { transaction: t });
             }).catch(utils_1.handleError);
         }),
-        updateComment: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, { id, input, authUser }, { db }, info) => {
-            id = Number.parseInt(id);
+        updateComment: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, { id, input }, { db, authUser }, info) => {
+            //id = Number.parseInt(id);
             return db.sequelize.transaction((t) => {
                 return db.Comment
                     .findById(id)
@@ -50,7 +49,7 @@ exports.commentResolvers = {
             }).catch(utils_1.handleError);
         }),
         deleteComment: composable_resolver_1.compose(...auth_resolver_1.authResolvers)((parent, { id }, { db, authUser }, info) => {
-            id = Number.parseInt(id);
+            //id = Number.parseInt(id);
             return db.sequelize.transaction((t) => {
                 return db.Comment
                     .findById(id)
